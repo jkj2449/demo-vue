@@ -1,32 +1,91 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
-    <router-view/>
-  </div>
+  <v-app id="inspire">
+    <v-navigation-drawer
+      v-model="drawer"
+      app
+    >
+      <v-list dense>
+        <v-list-item router :to="{name: 'home'}" exact>
+          <v-list-item-content>
+            <v-list-item-title>Home</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item
+          v-if="!isLogin"
+          router :to="{name: 'login'}" exact
+          >
+          <v-list-item-content>
+            <v-list-item-title>Login</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item 
+          v-if="isLogin"
+          router :to="{name: 'mypage'}" exact
+          >
+          <v-list-item-content>
+            <v-list-item-title>MyPage</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+      </v-list>
+    </v-navigation-drawer>
+
+    <v-app-bar
+      app
+      color="indigo"
+      dark
+    >
+      <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
+      <v-toolbar-title>Application</v-toolbar-title>
+      <v-spacer></v-spacer>
+      <v-toolbar-items class="hidden-sm-and-down">
+        <v-menu offset-y>
+          <template v-slot:activator="{ on }">
+            <v-btn
+              dark
+              v-on="on"
+              flat
+              icon
+            >
+              <v-icon>Menu</v-icon>
+            </v-btn>
+          </template>
+          <v-list>
+            <v-list-item router :to="{name: 'mypage'}">
+              <v-list-item-title>My Page</v-list-item-title>
+            </v-list-item>
+            <v-list-item  @click="$store.dispatch('logout')">
+              <v-list-item-title>Logout</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+      </v-toolbar-items>
+      
+    </v-app-bar>
+
+    <v-content>
+      <router-view/>
+    </v-content>
+    <v-footer
+      color="indigo"
+      app
+    >
+      <span class="white--text">&copy; 2019</span>
+    </v-footer>
+  </v-app>
 </template>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
+<script>
+  import { mapState } from 'vuex'
 
-#nav {
-  padding: 30px;
-}
-
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-#nav a.router-link-exact-active {
-  color: #42b983;
-}
-</style>
+  export default {
+    props: {
+      source: String,
+    },
+    data: () => ({
+      drawer: null,
+    }),
+    computed: {
+      ...mapState(['isLogin'])
+    }
+  }
+</script>

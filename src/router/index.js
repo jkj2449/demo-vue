@@ -1,23 +1,45 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '../views/Home.vue'
+import store from '../store'
 
 Vue.use(VueRouter)
 
-  const routes = [
+const rejectAuthUser = (to, from, next) => {
+  if(store.state.isLogin) {
+    alert('이미 로그인 되어있습니다.')
+    next('/')
+  } else {
+    next();
+  }
+}
+
+const onlyAuthUser = (to, from, next) => {
+  if(!store.state.isLogin) {
+    alert('로그인을 해주세요')
+    next('/login')
+  } else {
+    next();
+  }
+}
+
+const routes = [
   {
     path: '/',
-    name: 'Home',
-    component: Home
+    name: 'home',
+    component: () => import(/* webpackChunkName: "home" */ '../views/Home.vue')
   },
   {
-    path: '/about',
-    name: 'About',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
-  }
+    path: '/login',
+    name: 'login',
+    beforeEnter: rejectAuthUser,
+    component: () => import(/* webpackChunkName: "login" */ '../views/Login.vue')
+  },
+  {
+    path: '/mypage',
+    name: 'mypage',
+    beforeEnter: onlyAuthUser,
+    component: () => import(/* webpackChunkName: "login" */ '../views/Mypage.vue')
+  },
 ]
 
 const router = new VueRouter({
